@@ -1,5 +1,7 @@
 package com.randy.taskmanager.service;
 
+import com.randy.taskmanager.dto.TaskRequest;
+import com.randy.taskmanager.dto.TaskResponse;
 import com.randy.taskmanager.entity.Task;
 import com.randy.taskmanager.repository.TaskRepository;
 import org.springframework.stereotype.Service;
@@ -15,8 +17,26 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public Task createTask(Task task) {
-        return taskRepository.save(task);
+    public TaskResponse createTask(TaskRequest request) {
+
+        Task task = new Task();
+        task.setTitle(request.getTitle());
+        task.setDescription(request.getDescription());
+        task.setStatus(request.getStatus());
+        task.setPriority(request.getPriority());
+        task.setDueDate(request.getDueDate());
+
+        Task saved = taskRepository.save(task);
+
+        TaskResponse response = new TaskResponse();
+        response.setId(saved.getId());
+        response.setTitle(saved.getTitle());
+        response.setDescription(saved.getDescription());
+        response.setStatus(saved.getStatus());
+        response.setPriority(saved.getPriority());
+        response.setDueDate(saved.getDueDate());
+
+        return response;
     }
 
     public List<Task> getAllTasks() {
