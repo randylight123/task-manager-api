@@ -4,6 +4,7 @@ import com.randy.taskmanager.dto.TaskRequest;
 import com.randy.taskmanager.dto.TaskResponse;
 import com.randy.taskmanager.entity.Task;
 import com.randy.taskmanager.repository.TaskRepository;
+import com.randy.taskmanager.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,7 +45,8 @@ public class TaskService {
     }
 
     public Task getTaskById(Long id) {
-        return taskRepository.findById(id).orElseThrow();
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
     }
 
     public Task updateTask(Long id, Task updatedTask) {
