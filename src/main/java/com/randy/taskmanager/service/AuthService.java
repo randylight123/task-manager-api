@@ -6,6 +6,7 @@ import com.randy.taskmanager.dto.auth.RegisterRequest;
 import com.randy.taskmanager.entity.User;
 import com.randy.taskmanager.exception.BadRequestException;
 import com.randy.taskmanager.repository.UserRepository;
+import com.randy.taskmanager.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +15,12 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     public AuthResponse register(RegisterRequest request) {
@@ -37,7 +40,7 @@ public class AuthService {
 
         userRepository.save(user);
 
-        return new AuthResponse("User registered successfully");
+        return new AuthResponse(null, "User registered successfully");
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -50,6 +53,8 @@ public class AuthService {
             throw new BadRequestException("Invalid email or password");
         }
 
-        return new AuthResponse("Login successful");
+        String token = jwtService.generateToken(user.getEmail());
+
+        return new AuthResponse(token, "Login successful");
     }
 }
